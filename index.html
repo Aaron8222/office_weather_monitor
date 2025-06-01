@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Live Temperature</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light text-center p-5">
+
+  <div class="container">
+    <h1 class="display-4 mb-4">🌡️ PI Office Temperature Monitor</h1>
+    <div class="card shadow p-4">
+      <h2 class="text-muted">Current Temperature</h2>
+      <p id="temp" class="display-1">-- °F</p>
+    </div>
+
+    <!-- Custom Text Section -->
+    <div class="card shadow p-4">
+        <p id="custom-text" class="lead">
+            Placeholder
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+function getComment(temp) {
+    const cold = [
+      "Colder than your ex’s heart.",
+      "Frostbite? Optional but likely.",
+      "Warning: You may see your breath (and your regrets).",
+      "Chill out, literally.",
+      "Freeze! You’re under a chill arrest."
+    ];
+    const mild = [
+      "Goldilocks would love this. Just right.",
+      "Ideal for doing absolutely nothing.",
+      "Not too hot, not too cold—just right to procrastinate.",
+      "Your thermostat is proud of you."
+    ];
+    const warm = [
+      "Sweat is just your body crying from happiness.",
+      "Now would be a great time to invent teleportation to the Arctic.",
+      "Hydrate or evaporate.",
+      "Too hot for socks. Too cold for complaints.",
+      "Sun’s out, buns out!"
+    ];
+    const hot = [
+      "Welcome to the surface of the sun.",
+      "We’re not saying it’s hot, but your shadow just passed out.",
+      "Global warming called — it says ‘My bad.’",
+      "Is it hot in here, or is it just you?"
+    ];
+
+    let messages = [];
+    if (temp < 68) messages = cold;
+    else if (temp < 75) messages = mild;
+    else if (temp < 80) messages = warm;
+    else messages = hot;
+
+    return messages[Math.floor(Math.random() * messages.length)];
+  }
+
+  function fetchTemp() {
+    fetch("https://api.thingspeak.com/channels/2976952/fields/1/last.json")
+      .then(res => res.json())
+      .then(data => {
+        const temp = parseFloat(data.field1);
+        document.getElementById("temp").textContent = temp + " °F";
+
+        // Get and display a witty comment
+        const Comment = getComment(temp);
+        document.getElementById("custom-text").textContent = Comment;
+      });
+  }
+
+    fetchTemp();
+    setInterval(fetchTemp, 20000); // Refresh every 20 sec
+  </script>
+
+</body>
+</html>
